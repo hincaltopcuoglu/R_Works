@@ -1,0 +1,8 @@
+gini=function(x)
+{
+  n=length(x)
+  gini.cofficient=sum(sort(x)*(2*1:n -n -1))/(n*sum(x))
+  return(gini.cofficient)
+}
+
+gini(x)
