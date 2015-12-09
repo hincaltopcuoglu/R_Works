@@ -1,4 +1,7 @@
 #x must be a data.frame with categorical variables
+
+library(lsr)
+
 cramersx<-function(x)
 {
   
