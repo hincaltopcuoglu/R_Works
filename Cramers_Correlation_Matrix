@@ -1,0 +1,21 @@
+#x must be a data.frame with categorical variables
+cramersx<-function(x)
+{
+  
+  cramers.matrix=matrix(nrow=dim(df)[2],ncol=dim(df)[2])
+  for (i in 1:dim(data)[2])
+  {
+    for (j in 1:dim(data)[2])
+    {
+      cramers.matrix[i,j]=cramersV(data[,i],data[,j])
+    }  
+  }
+  
+  colnames(cramers.matrix)<-colnames(x)
+  row.names(cramers.matrix)<-colnames(x)
+  return(cramers.matrix)
+  
+}
+
+cramersx(data)
+
