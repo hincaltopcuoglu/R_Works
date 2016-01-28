@@ -1,0 +1,59 @@
+#t-test for two independent group mean comparison
+
+t_test<-function(x,y,conf.level)
+{
+  
+lx<-length(which(!is.na(x)))
+ly<-length(which(!is.na(y)))
+
+std_err<-if(lx==ly) 
+{
+  sqrt(((sd(x))^2+(sd(y))^2)/lx)
+}
+else 
+{
+  y1<-NULL
+  x1<-NULL
+  y2<-NULL
+  x2<-NULL
+  X3<-NULL
+  y3<-NULL
+  for(i in 1:lx)
+  {
+    for (j in 1:ly)
+    {  
+      x1[i]<-as.numeric(x[i])
+      x1_sum<-sum(as.numeric(x1))
+      x2[i]<-as.numeric(x1[i])^2
+      x2_sqr_sum<-sum(as.numeric(x2))
+      x3<-x2_sqr_sum-(x1_sum^2/lx)
+      
+      y1[j]<-y[j]
+      y1_sum<-sum(as.numeric(y1))
+      y2[j]<-as.numeric(y1[j])^2
+      y2_sqr_sum<-sum(as.numeric(y2))
+      y3<-y2_sqr_sum-(y1_sum^2/ly)
+      
+      s_err<-sqrt(((x3+y3)/(lx+ly-2))*((lx+ly)/(lx*ly)))
+    }  
+    
+  }
+  std_err<-round(s_err,digits = 4)
+}
+
+x_mean<-round(mean(x,na.rm=TRUE),digits = 4)
+y_mean<-round(mean(y,na.rm=TRUE),digits=4)
+
+t_test1<-round(((x_mean-y_mean)/std_err),digits=4)
+
+df<-(lx-1)+(ly-1)
+
+t_table<-round(qt((1-(1-conf.level)/2),df),digits = 4)
+
+if(t_test1<t_table) {print("Ho Hypotesis Accept")} else {print("Ho Hypotesis Reject")}
+}
+
+
+
+
+t_test(test2$a,test2$b,0.95)
