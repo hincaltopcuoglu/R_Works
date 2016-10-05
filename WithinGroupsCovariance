@@ -1,0 +1,29 @@
+ calcWithinGroupsCovariance <- function(variable1,variable2,groupvariable)
+  {
+     # find out how many values the group variable can take
+     groupvariable2 <- as.factor(groupvariable[[1]])
+     levels <- levels(groupvariable2)
+     numlevels <- length(levels)
+     # get the covariance of variable 1 and variable 2 for each group:
+     Covw <- 0
+     for (i in 1:numlevels)
+     {
+        leveli <- levels[i]
+        levelidata1 <- variable1[groupvariable==leveli,]
+        levelidata2 <- variable2[groupvariable==leveli,]
+        mean1 <- mean(levelidata1)
+        mean2 <- mean(levelidata2)
+        levelilength <- length(levelidata1)
+        # get the covariance for this group:
+        term1 <- 0
+        for (j in 1:levelilength)
+        {
+           term1 <- term1 + ((levelidata1[j] - mean1)*(levelidata2[j] - mean2))
+        }
+        Cov_groupi <- term1 # covariance for this group
+        Covw <- Covw + Cov_groupi
+     }
+     totallength <- nrow(variable1)
+     Covw <- Covw / (totallength - numlevels)
+     return(Covw)
+  }
