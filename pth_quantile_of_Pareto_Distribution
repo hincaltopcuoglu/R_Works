@@ -1,0 +1,5 @@
+# pth quantile of the Pareto distribution with the exponent and threshold we ask for.
+qpareto.1<-function(p,exponent,threshold){
+  q<-threshold*((1-p)^(-1/(exponent-1)))
+  return(q)
+}
