@@ -1,0 +1,8 @@
+#to plot more than one graphic with loop
+plotHistFunc <- function(x, na.rm = TRUE, ...) {
+  nm <- names(x)
+  for (i in seq_along(nm)) {
+    plots <-ggplot(x,aes_string(x = nm[i])) + geom_bar(stat="count")
+    ggsave(plots,filename=paste("myplot",nm[i],".png",sep=""))
+  }
+}
