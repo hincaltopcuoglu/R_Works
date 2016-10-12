@@ -1,0 +1,10 @@
+#let data is a data frame
+#and we want to convert some columns to factor
+
+#first way to turn values to factor
+data[,2:116] <- apply(data[,2:116] , 2, function(x) as.factor(x))
+
+#second way to turn values to factor
+col_names<-names(data[,2:117])
+
+data[col_names] <- lapply(data[col_names] , factor)
