@@ -1,0 +1,83 @@
+#  @var_x is continous independent variable that wanted to calculate Information value according to dependent variable
+#  @var_y is binary dependent target variable that used for calculation of information value for a given dependent variable
+#  @k is the desired count of the class of the dependent continous variable
+
+WoeIV<-function(var_x,var_y,k){
+
+  requireNamespace(sqldf)
+
+  minx<-min(var_x)
+  maxx<-max(var_x)
+  dg<-maxx-minx
+  sa<-ceiling(dg/k)
+
+  df1=data.frame(seq(minx,maxx,sa))
+  colnames(df1)<-"f1"
+
+  df2<-NULL
+  for (i in 1:nrow(df1))
+  {
+    df2[i]<-df1[i,] + sa-1
+
+
+  }
+
+  df2<-as.data.frame(df2)
+  colnames(df2)<-"f2"
+
+  df3<-cbind(df1,df2)
+
+  for(i in 1:nrow(df2))
+  {
+    df3$range[i]<-paste(df1[i,],df2[i,],sep="-")
+
+  }
+
+  df4<-cbind(df3,data.frame(table(findInterval(var_x,df3$f1))))
+
+  df4$Var1<-NULL
+
+  x2<-data.frame(var_y,var_x)
+
+  sql<-sqldf("select distinct df4.range,
+              sum(case when x2.var_x>=df4.f1 and x2.var_x<=df4.f2 and x2.var_y=1 then 1 else 0 end) as good_acc_cnt,
+             sum(case when x2.var_x>=df4.f1 and x2.var_x<=df4.f2 and x2.var_y=0 then 1 else 0 end) as bad_acc_cnt
+             from x2,df4
+             group by range")
+
+
+
+  df5<-merge(x=df4,y=sql,sort = TRUE,by="range",all.x = TRUE)
+
+
+  df6<-df5[ order(df5[,2]),]
+
+  df6$group_bad_rate<-round(df6$bad_acc_cnt/df6$Freq,digits=2)
+
+  df6$badrate<-round(df6$bad_acc_cnt/sum(df6$bad_acc_cnt),digits = 2)
+
+  df6$goodrate<-round(df6$good_acc_cnt/sum(df6$good_acc_cnt),digits=2)
+
+  df6$woe<-log(df6$goodrate/df6$badrate)
+
+  df6$IV<-(df6$goodrate-df6$badrate)*df6$woe
+
+  for(i in 1:nrow(df6))
+  {
+    if(df6[i,10]=="Inf"|df6[i,10]=="-Inf"){df6[i,10]<-0}
+  }
+
+
+  for(i in 1:nrow(df6))
+  {
+    if(df6[i,11]=="Inf" | df6[i,11]=="-Inf"){df6[i,11]<-0}
+  }
+
+
+
+  print(df6)
+
+  cat("Information value of Given Dependent variable is :",sum(df6$IV,na.rm = TRUE))
+
+}
+
