@@ -1,0 +1,112 @@
+library(sparklyr)
+
+spark_install(version = "2.0.2") #already installed
+
+sc <- spark_connect(master = "local")
+
+spark_web(sc)
+
+livy_install()
+
+library(dplyr)
+
+config <- spark_config()
+config[["sparklyr.defaultPackages"]] <- NULL
+sc <- spark_connect(master = "local", config = config)
+
+iris_tbl<-copy_to(sc,iris)
+
+spark_disconnect(sc)
+config <- spark_config()
+hadoopBin <- normalizePath(file.path("C:\\Users\\Samsung\\AppData\\Local\\rstudio\\spark\\Cache\\spark-1.6.2-bin-hadoop2.6\\bin", "tmp", "hadoop", "bin"))
+
+config[["spark.sql.warehouse.dir"]] <- if (.Platform$OS.type == "windows") hadoopBin else NULL
+sc <- spark_connect(master = "local",config = config)
+iris_tbl <- copy_to(sc, iris, overwrite = TRUE)
+
+
+spark_disconnect(sc)
+config <- spark_config()
+hadoopBin <- paste0("file://", normalizePath(file.path(spark_home_dir(), "tmp", "hadoop", "bin")))
+config[["spark.sql.warehouse.dir"]] <- if (.Platform$OS.type == "windows") hadoopBin else NULL
+sc <- spark_connect(master = "local",config = config,version = "1.6.2")
+iris_tbl <- copy_to(sc, iris, overwrite = TRUE)
+
+
+spark_disconnect(sc)
+library(sparklyr)
+
+config <- spark_config()
+config[["sparklyr.defaultPackages"]] <- NULL
+sc <- spark_connect(master = "local", config = config)
+
+config <- spark_config()
+config[["spark.sql.hive.thriftServer.singleSession"]] <- "true"
+sc <- spark_connect(master = "local", config = config)
+iris_tbl <- copy_to(sc, iris, overwrite = TRUE)
+
+
+
+
+library(sparklyr)
+spark_install(version = "1.6.2")
+sc <- spark_connect(master = "local")
+
+
+hadoopBin <- normalizePath(file.path("C:\\Users\\Samsung\\AppData\\Local\\rstudio\\spark\\Cache\\spark-2.0.2-bin-hadoop2.7\\bin", "tmp", "hadoop", "bin"))
+
+config <- spark_config()
+
+###########################
+
+#for instaling it
+devtools::install_github("rstudio/sparklyr")
+
+#then 1
+library(sparklyr)
+#do not do this because you installed it
+spark_install(version = "2.0.2")
+
+#if you didnt attached it to global enviroment do it
+Sys.setenv(SPARK_HOME="C:\\spark-2.0.2-bin-hadoop2.7")
+
+#then 2
+config <- spark_config()
+
+#then 3
+config[["spark.sql.hive.thriftServer.singleSession"]] <- "true"
+
+#if you connected before do it
+spark_disconnect(sc)
+
+# then 4
+sc <- spark_connect(master = "local",version = "2.0.2")
+
+# then 5
+library(dplyr)
+
+#then 6
+iris_tbl <- copy_to(sc, iris, overwrite = TRUE)
+
+#it is for connecting spark locally and writing iris data to spark
+
+##############################
+library(sparklyr)
+## for connection to s3
+config <- spark_config()
+
+config$sparklyr.defaultPackages <- "org.apache.hadoop:hadoop-aws:2.7.3"
+
+spark_disconnect(sc)
+
+sc <- spark_connect(master = "local", 
+                    spark_home = "C:\\spark-2.0.2-bin-hadoop2.7",
+                    config =  config)
+
+xx<-spark_read_csv(sc,"test_2",path = "s3a://AKIAJ7VWFQYCFWEUQ25Q:Dp8M5Wj7O7Ku6RuxX5hOT+mLs22h1x1YLo9nRxiL@preparation-test/test_2.csv",memory = TRUE)
+
+
+head(xx)
+
+
+##############################
