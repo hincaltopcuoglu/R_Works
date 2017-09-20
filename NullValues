@@ -1,0 +1,8 @@
+#check nulls
+apply(r2, 2, function(x) any(is.na(x)))
+
+
+#replace nulls with mean
+for (i in 1:ncol(r2)){
+  if (((is.numeric(r2[,i]))==TRUE) & any(is.na(r2[,i]))==TRUE) { r2[is.na(r2[,i]),i]<- mean(r2[,i], na.rm = TRUE)}
+}
